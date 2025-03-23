@@ -9,7 +9,7 @@ class CalculateSumHandler
 end
 
 # Initialize server
-server = MCPServer.new(log_file: './dev.log')
+server = MCPServer.new(log_file: File.join(__dir__, 'dev.log'))
 
 # Add tools
 server.add_tool(
