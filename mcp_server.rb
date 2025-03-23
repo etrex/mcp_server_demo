@@ -107,10 +107,8 @@ class MCPServer
 
   def call_tool(request_id, params)
     tool_name = params["name"]
-    arguments = params["arguments"]
-
-
-
+    arguments = JSON.parse(params["arguments"].to_json, symbolize_names: true)
+    
     if !tool_name
       return error_response(request_id, -32602, "Missing tool name")
     end
@@ -121,7 +119,15 @@ class MCPServer
       {
         "jsonrpc": "2.0",
         "id": request_id,
-        "result": result
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": result.to_s
+            }
+          ],
+          "isError": false
+        }
       }
     else
       error_response(request_id, -32601, "Tool not found: #{tool_name}")
