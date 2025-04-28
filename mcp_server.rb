@@ -120,12 +120,7 @@ class MCPServer
         "jsonrpc": "2.0",
         "id": request_id,
         "result": {
-          "content": [
-            {
-              "type": "text",
-              "text": result.to_s
-            }
-          ],
+          "content": result,
           "isError": false
         }
       }
