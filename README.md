@@ -1,42 +1,28 @@
-# MCP Server Demo | MCP 伺服器展示
+# MCP 伺服器展示
+
+[English Version](README_EN.md)
 
 這個專案是一個練習用的 Model Context Protocol (MCP) server 實作，主要目的是為了學習和了解 MCP 的運作原理。
 
-A Ruby implementation of a Model Context Protocol (MCP) server for learning and practice purposes.
-
-## Purpose | 目的
+## 目的
 
 本專案的主要目標：
 - 學習 MCP 協議的基本概念
 - 理解 MCP server 的運作機制
 - 實作一個簡單的 MCP server 來加深理解
 
-This project aims to:
-- Learn the basic concepts of MCP protocol
-- Understand how MCP server works
-- Implement a simple MCP server for better understanding
-
-## Requirements | 環境需求
+## 環境需求
 
 環境需求：
 - Ruby
 - Node.js 和 npm（用於 MCP inspector）
 
-Requirements:
-- Ruby
-- Node.js and npm (for using the MCP inspector)
-
-## Integration with Claude | 與 Claude 整合
+## 與 Claude 整合
 
 與 Claude 整合的步驟：
 
 1. 複製或下載此專案到本地端。
 2. 修改 Claude 的設定檔，加入以下 JSON 結構：
-
-To integrate this MCP server with Claude:
-
-1. Clone or download this repository to your local machine.
-2. Configure your Claude settings by modifying the configuration file with the following JSON structure:
 
 ```json
 {
@@ -53,22 +39,13 @@ To integrate this MCP server with Claude:
 
 注意：請將 `<path_to_repository>` 替換為您本地端專案的絕對路徑。
 
-Note: Replace `<path_to_repository>` with the absolute path to your local copy of this repository.
-
 3. 重新啟動 Claude 以套用新設定。
 
-3. Restart Claude to apply the configuration changes.
+## 測試方法
 
-## Testing Methods | 測試方法
-
-### 1. Using MCP Inspector | 使用 MCP Inspector
+### 1. 使用 MCP Inspector
 
 1. 安裝 MCP inspector：
-```bash
-npm install -g @modelcontextprotocol/inspector
-```
-
-1. Install the MCP inspector:
 ```bash
 npm install -g @modelcontextprotocol/inspector
 ```
@@ -78,57 +55,56 @@ npm install -g @modelcontextprotocol/inspector
 npx @modelcontextprotocol/inspector ruby demo.rb
 ```
 
-2. Run the server with inspector:
+### 2. STDIO 測試
+
+MCP Server 使用標準輸入輸出（STDIO）進行通訊。有兩種測試方式：
+
+#### 方式一：直接執行並手動輸入（推薦）
+
+1. 首先啟動伺服器：
 ```bash
-npx @modelcontextprotocol/inspector ruby demo.rb
+ruby simple_server.rb
 ```
 
-### 2. Direct STDIO Testing | 直接 STDIO 測試
-
-透過標準輸入發送 JSON-RPC 指令：
-
-Send JSON-RPC commands through standard input:
-
-1. 初始化伺服器：
-```bash
-echo '{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"sampling":{},"roots":{"listChanged":true}},"clientInfo":{"name":"mcp-inspector","version":"0.0.1"}}}' | ruby demo.rb
+2. 然後在終端機中輸入 JSON-RPC 指令（每行一個指令）：
+```json
+{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"sampling":{},"roots":{"listChanged":true}},"clientInfo":{"name":"mcp-inspector","version":"0.0.1"}}}
+{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"_meta":{"progressToken":0},"name":"calculate_sum","arguments":{"a":1,"b":2,"env":""}}}
 ```
 
-1. Initialize the server:
+這種方式可以保持伺服器持續運行，進行多次測試。使用 Ctrl+C 可以結束伺服器。
+
+#### 方式二：使用 PIPE（單次測試）
+
+使用 PIPE（|）可以快速測試單個指令，但每次指令結束後伺服器就會關閉：
+
 ```bash
-echo '{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"sampling":{},"roots":{"listChanged":true}},"clientInfo":{"name":"mcp-inspector","version":"0.0.1"}}}' | ruby demo.rb
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | ruby simple_server.rb
 ```
 
-2. 列出可用工具：
-```bash
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | ruby demo.rb
-```
+注意：使用 PIPE 時，每次指令執行完成後，STDIN 會收到 EOF 並自動關閉伺服器。如果需要連續測試多個指令，建議使用方式一。
 
-2. List available tools:
-```bash
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | ruby demo.rb
-```
+## 開發說明
 
-3. 呼叫工具：
-```bash
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"_meta":{"progressToken":0},"name":"calculate_sum","arguments":{"a":1,"b":2}}}' | ruby demo.rb
-```
+本專案提供兩種不同的實作方式，幫助理解 MCP 協議：
 
-3. Call a tool:
-```bash
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"_meta":{"progressToken":0},"name":"calculate_sum","arguments":{"a":1,"b":2}}}' | ruby demo.rb
-```
+### 基礎實作 - Simple Server
+- `simple_server.rb`：單一檔案的基礎實作
+  - 完整展示 MCP 協議的基本概念
+  - 包含完整的 JSON-RPC 請求/回應流程
+  - 展示工具註冊和呼叫機制
+  - 適合學習 MCP 的基本運作原理
 
-## Development | 開發說明
-
-主要元件：
-- `demo.rb`：主要伺服器實作
+### 架構化實作 - Demo Server
+- `demo.rb`：主要進入點
+  - 展示如何組織一個完整的 MCP 伺服器專案
+  - 使用模組化的方式管理工具和處理程序
 - `mcp_server.rb`：核心 MCP 協議處理
+  - 抽象化協議層的實作
+  - 提供可重用的基礎類別和方法
+  - 展示如何建構可擴展的 MCP 伺服器架構
 
-Main components:
-- `demo.rb`: Main server implementation
-- `mcp_server.rb`: Core MCP protocol handling
+## 授權條款
 
-## License | 授權條款
-
-MIT License | MIT 授權
+MIT 授權
