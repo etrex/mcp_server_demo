@@ -17,7 +17,10 @@ class CalculateSumTool < FastMcp::Tool
 
   def call(a:, b:, env:)
     result = a + b
-    { type: "text", text: result.to_s }.to_json
+    {
+      content: [{ type: 'text', text: result.to_s }],
+      isError: false
+    }
   end
 end
 
@@ -32,7 +35,11 @@ class ReadImageTool < FastMcp::Tool
   def call(path:)
     mime_type = get_mime_type(path)
     image_data = Base64.strict_encode64(File.binread(path))
-    { type: "image", data: image_data, mimeType: mime_type }.to_json
+
+    {
+      content: [{ type: "image", data: image_data, mimeType: mime_type }],
+      isError: false
+    }
   end
 
   private
