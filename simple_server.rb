@@ -40,30 +40,78 @@ class SimpleServer
   def handle_request(request)
     case request["method"]
     when "initialize"
-      { jsonrpc: "2.0", id: request["id"],
+      { 
+        jsonrpc: "2.0", 
+        id: request["id"],
         result: {
-          protocolVersion: "2024-11-05",
-          capabilities: { tools: {} },
-          serverInfo: { name: "mcp server demo", version: "1.0.0" }
+          protocolVersion: "2025-06-18",
+          capabilities: { 
+            tools: {
+              structuredOutput: true
+            },
+          },
+          serverInfo: { 
+            name: "mcp server demo", 
+            version: "1.0.0" 
+          }
         }
       }
     when "notifications/initialized"
       nil
     when "tools/list"
-      { jsonrpc: "2.0", id: request["id"], result: { tools: self.class.tools } }
+      { 
+        jsonrpc: "2.0", 
+        id: request["id"], 
+        result: { 
+          tools: self.class.tools 
+        } 
+      }
     when "resources/list"
-      { jsonrpc: "2.0", id: request["id"], result: { resources: [] } }
+      { 
+        jsonrpc: "2.0", 
+        id: request["id"], 
+        result: { 
+          resources: [] 
+        } 
+      }
     when "prompts/list"
-      { jsonrpc: "2.0", id: request["id"], result: { prompts: [] } }
+      { 
+        jsonrpc: "2.0", 
+        id: request["id"], 
+        result: { 
+          prompts: [] 
+        } 
+      }
     when /^tools\/(?:call|run\/.+)$/
       tool_name = request["params"]["name"] || request["method"].split("/")[2]
       args = request["params"].is_a?(String) ? JSON.parse(request["params"]) : request["params"]
       args = args["arguments"] if args["arguments"]
       case tool_name
       when "calculate_sum"
-        { "jsonrpc": "2.0", "id": request["id"], "result": { "content": [{ type: "text", text: (args["a"] + args["b"]).to_s }], "isError": false } }
+        { 
+          jsonrpc: "2.0", 
+          id: request["id"], 
+          result: { 
+            content: [{ 
+              type: "text", 
+              text: (args["a"] + args["b"]).to_s 
+            }], 
+            isError: false 
+          } 
+        }
       when "read_image"
-        { "jsonrpc": "2.0", "id": request["id"], "result": { "content": [{ type: "image", data: Base64.strict_encode64(File.binread(args["path"])), mimeType: get_mime_type(args["path"]) }], "isError": false } }
+        { 
+          jsonrpc: "2.0", 
+          id: request["id"], 
+          result: { 
+            content: [{ 
+              type: "image", 
+              data: Base64.strict_encode64(File.binread(args["path"])), 
+              mimeType: get_mime_type(args["path"]) 
+            }], 
+            isError: false 
+          } 
+        }
       end
     end
   end

@@ -41,7 +41,6 @@ GEM
       rack (~> 3.1)
     json (2.11.3)
     logger (1.7.0)
-    mcp-rb (0.3.3)
     mime-types (3.6.2)
       logger
       mime-types-data (~> 3.2015)
@@ -55,7 +54,6 @@ PLATFORMS
 
 DEPENDENCIES
   fast-mcp
-  mcp-rb
 
 BUNDLED WITH
    2.6.6

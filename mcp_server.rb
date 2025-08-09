@@ -32,10 +32,10 @@ class MCPServer
   # @return [Hash] 包含所有工具資訊的 JSON-RPC 回應
   def list_tools(id)
     {
-      "jsonrpc": "2.0",
-      "id": id,
-      "result": {
-        "tools": @tools.map { |name, tool|
+      jsonrpc: "2.0",
+      id: id,
+      result: {
+        tools: @tools.map { |name, tool|
           {
             name: name,
             description: tool[:description],
@@ -51,10 +51,10 @@ class MCPServer
   # @return [Hash] 包含資源列表的 JSON-RPC 回應
   def list_resources(id)
     {
-      "jsonrpc": "2.0",
-      "id": id,
-      "result": {
-        "resources": []
+      jsonrpc: "2.0",
+      id: id,
+      result: {
+        resources: []
       }
     }
   end
@@ -64,10 +64,10 @@ class MCPServer
   # @return [Hash] 包含提示列表的 JSON-RPC 回應
   def list_prompts(id)
     {
-      "jsonrpc": "2.0",
-      "id": id,
-      "result": {
-        "prompts": []
+      jsonrpc: "2.0",
+      id: id,
+      result: {
+        prompts: []
       }
     }
   end
@@ -77,16 +77,18 @@ class MCPServer
   # @return [Hash] 包含伺服器資訊和功能的 JSON-RPC 回應
   def run_initialize(id)
     {
-      "jsonrpc": "2.0",
-      "id": id,
-      "result": {
-        "protocolVersion": "2024-11-05",
-        "capabilities": {
-          "tools": {}
+      jsonrpc: "2.0",
+      id: id,
+      result: {
+        protocolVersion: "2025-06-18",
+        capabilities: {
+          tools: {
+            structuredOutput: true
+          }
         },
-        "serverInfo": {
-          "name": @name,
-          "version": "1.0.0"
+        serverInfo: {
+          name: @name,
+          version: "1.0.0"
         }
       }
     }
@@ -148,12 +150,13 @@ class MCPServer
     if @tools.key?(tool_name)
       handler = @tools[tool_name][:handler].new
       result = handler.call(**arguments)
+      
       {
-        "jsonrpc": "2.0",
-        "id": request_id,
-        "result": {
-          "content": result,
-          "isError": false
+        jsonrpc: "2.0",
+        id: request_id,
+        result: {
+          content: result,
+          isError: false
         }
       }
     else
@@ -168,11 +171,11 @@ class MCPServer
   # @return [Hash] JSON-RPC 錯誤回應
   def error_response(id, code, message)
     {
-      "jsonrpc": "2.0",
-      "id": id,
-      "error": {
-        "code": code,
-        "message": message
+      jsonrpc: "2.0",
+      id: id,
+      error: {
+        code: code,
+        message: message
       }
     }
   end

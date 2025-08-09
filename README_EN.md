@@ -52,7 +52,15 @@ npm install -g @modelcontextprotocol/inspector
 
 2. Run the server with inspector:
 ```bash
+npx @modelcontextprotocol/inspector ruby simple_server.rb
+```
+
+```bash
 npx @modelcontextprotocol/inspector ruby demo.rb
+```
+
+```bash
+npx @modelcontextprotocol/inspector ruby server_with_fast_mcp.rb
 ```
 
 ### 2. STDIO Testing
